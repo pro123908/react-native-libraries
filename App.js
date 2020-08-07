@@ -131,7 +131,22 @@ const App = () => {
     });
 
     testNotification();
+    cancelNotifications();
+
+    // scheduleNotification();
   }, []);
+
+  const cancelNotifications = () => {
+    PushNotification.cancelAllLocalNotifications();
+  };
+
+  const scheduleNotification = () => {
+    PushNotification.localNotificationSchedule({
+      //... You can use all the options from localNotifications
+      message: 'My Schedule Notification Message', // (required)
+      date: new Date(Date.now() + 10 * 1000), // in 10 secs
+    });
+  };
 
   const testNotification = () => [
     PushNotification.localNotification({
