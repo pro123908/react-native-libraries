@@ -22,7 +22,12 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/FontAwesome';
+
+import {useNavigation} from '@react-navigation/native';
+import {navigationRef} from './RootNavigation';
+import RefButton from './RefButton';
 
 const styles = StyleSheet.create({
   container: {
@@ -47,6 +52,16 @@ const styles = StyleSheet.create({
   },
 });
 
+function GoToScreen({screenName}) {
+  const navigation = useNavigation();
+  return (
+    <Button
+      title={`Go to ${screenName}`}
+      onPress={() => navigation.navigate(screenName)}
+    />
+  );
+}
+
 function HomeScreen({navigation}) {
   return (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
@@ -59,11 +74,20 @@ function HomeScreen({navigation}) {
           device just to make things simple to look
         </Text>
         <Button
-          style={styles.btnStyle}
-          title="Go to Settings"
-          onPress={() => navigation.navigate('Settings')}
+          onPress={() => navigation.navigate('Setting')}
+          title="Go to Setting"
         />
+        <GoToScreen screenName="Profile" />
+        <RefButton />
       </View>
+    </View>
+  );
+}
+
+function NotificationsScreen({navigation}) {
+  return (
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+      <Button onPress={() => navigation.goBack()} title="Go back home" />
     </View>
   );
 }
@@ -121,10 +145,31 @@ function SettingsScreen({navigation}) {
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
+
+const OldStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="Home"
+      component={HomeScreen}
+      options={{
+        headerTitle: 'Profile Screen',
+        headerRight: () => (
+          <Button
+            onPress={() => alert('This is a button')}
+            title="Info"
+            color="#ff4800"
+          />
+        ),
+      }}
+    />
+    <Stack.Screen name="Setting" component={SettingsScreen} />
+  </Stack.Navigator>
+);
 
 const App = () => {
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       {/* <View style={styles.container}>
         <Text style={styles.titleStyles}>This is the Title changed</Text>
         <Text style={styles.paraStyles}>
@@ -139,7 +184,7 @@ const App = () => {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Details" component={DetailsScreen} />
       </Stack.Navigator> */}
-      <Tab.Navigator
+      {/* <Tab.Navigator
         tabBarOptions={{
           activeTintColor: 'black',
         }}>
@@ -172,8 +217,44 @@ const App = () => {
             component={ProfileScreen}
           />
         ) : null}
-      </Tab.Navigator>
+      </Tab.Navigator> */}
+      <Drawer.Navigator initialRouteName="Home">
+        <Drawer.Screen name="Home" component={tabNav} />
+        <Drawer.Screen name="Notifications" component={NotificationsScreen} />
+        <Drawer.Screen name="Details" component={OldStack} />
+      </Drawer.Navigator>
     </NavigationContainer>
   );
 };
+
+const tabNav = () => (
+  <Tab.Navigator
+    tabBarOptions={{
+      activeTintColor: 'black',
+    }}>
+    <Tab.Screen
+      options={{
+        tabBarIcon: ({color}) => <Icon name="home" size={30} color={color} />,
+      }}
+      name="Home"
+      component={HomeScreen}
+    />
+    <Tab.Screen
+      options={{
+        tabBarIcon: ({color}) => <Icon name="gear" size={30} color={color} />,
+      }}
+      name="Settings"
+      component={SettingsScreen}
+    />
+    {true ? (
+      <Tab.Screen
+        options={{
+          tabBarIcon: ({color}) => <Icon name="user" size={30} color={color} />,
+        }}
+        name="Profile"
+        component={ProfileScreen}
+      />
+    ) : null}
+  </Tab.Navigator>
+);
 export default App;
