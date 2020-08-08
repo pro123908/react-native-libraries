@@ -22,6 +22,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const styles = StyleSheet.create({
   container: {
@@ -138,10 +139,39 @@ const App = () => {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Details" component={DetailsScreen} />
       </Stack.Navigator> */}
-      <Tab.Navigator>
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Settings" component={SettingsScreen} />
-        {false ? <Tab.Screen name="Profile" component={ProfileScreen} /> : null}
+      <Tab.Navigator
+        tabBarOptions={{
+          activeTintColor: 'black',
+        }}>
+        <Tab.Screen
+          options={{
+            tabBarIcon: ({color}) => (
+              <Icon name="home" size={30} color={color} />
+            ),
+          }}
+          name="Home"
+          component={HomeScreen}
+        />
+        <Tab.Screen
+          options={{
+            tabBarIcon: ({color}) => (
+              <Icon name="gear" size={30} color={color} />
+            ),
+          }}
+          name="Settings"
+          component={SettingsScreen}
+        />
+        {true ? (
+          <Tab.Screen
+            options={{
+              tabBarIcon: ({color}) => (
+                <Icon name="user" size={30} color={color} />
+              ),
+            }}
+            name="Profile"
+            component={ProfileScreen}
+          />
+        ) : null}
       </Tab.Navigator>
     </NavigationContainer>
   );
